@@ -1,4 +1,4 @@
-# dnslookup_C
+# Router Topology Map Generator
 
 ## Usage:
 
