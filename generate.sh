@@ -1,11 +1,20 @@
 #!/bin/bash
 
+# if MESS is 1, any intermmediate files created in the process will be removed after finishing
+MESS=0
+
 mkdir traceroute_out
 mkdir traceroute_out/v4
 mkdir traceroute_out/v6
  
-# # # Iterate the command line arguments which are DNS names (e.g. www.example.com)
+# Iterate the command line arguments which are DNS names (e.g. www.example.com)
 for val in "$@"; do
+
+   if [ $val == "-m" ]; then
+      MESS=1
+      continue
+   fi
+
    OUT=$(echo $(./dnslookup $val))
    IFS=' ' read -r -a array <<< "$OUT"
    DOMAIN="${array[0]}"
@@ -60,5 +69,8 @@ echo "}" >> router-topology-v6.dot
 dot -T pdf -o router-topology-v4.pdf router-topology-v4.dot
 dot -T pdf -o router-topology-v6.pdf router-topology-v6.dot
 
-# cleanup
-rm -rf all_ipv4.txt all_ipv6.txt traceroute_out router-topology-v4.dot router-topology-v6.dot
+# # cleanup
+if [ $MESS -eq 0 ]; then
+   echo "cleaning up..."
+   rm -rf all_ipv4.txt all_ipv6.txt traceroute_out router-topology-v4.dot router-topology-v6.dot
+fi
